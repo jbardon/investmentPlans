@@ -30,12 +30,12 @@
 
                 <div class="form-group">
                     <label for="interets_versement">Interêts versement: </label>
-                    <input type="number" id="form_interets_versements" class="form-control" name="interets_versement" value="1"/>
+                    <input type="number" id="form_interets_versements" class="form-control" name="interets_versement" value="0"/>
                 </div>
 
                 <div class="form-group">
                     <label for="interets_annuels">Interêts annuels: </label>
-                    <input type="number" id="form_interets_annuels" class="form-control" name="interets_annuels" value="1.3"/>
+                    <input type="number" id="form_interets_annuels" class="form-control" name="interets_annuels" value="1.0"/>
                 </div>
 
                 <div class="form-group">
@@ -46,22 +46,7 @@
                 <input type="submit" class="btn btn-default" value="Calculer"/>
             </form>
 
-            <div class="table-responsive col-md-5 col-md-offset-1">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Année</th>
-                            <th>1er Janv.</th>
-                            <th>31 Déc.</th>
-                            <th>Sans placement</th>
-                            <th>Interets</th>
-                            <th>Interets cumulés</th>
-                            <th>Interets composés</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div class="table-responsive col-md-5 col-md-offset-1">                
             </div>
         </div>
     </div>
@@ -90,7 +75,23 @@
             interetsCumules = 0,
             interetsComposes = 0;       
 
-        var html = '';
+        var data = 'Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%';
+
+        var html = 
+            '<table class="table table-bordered table-striped table-hover">' +
+                    '<caption>' + data + '</caption>' +
+                    '<thead>' +
+                        '<tr>' +
+                            '<th>Année</th>' +
+                            '<th>1er Janv.</th>' +
+                            '<th>31 Déc.</th>' +
+                            '<th>Sans placement</th>' +
+                            '<th>Interets</th>' +
+                            '<th>Interets cumulés</th>' +
+//                            '<th>Interets composés</th>' +
+                        '</tr>' +
+                    '</thead>' +
+                    '<tbody>';
 
         base *= (1 - interetsVersements);
 
@@ -104,7 +105,7 @@
 
             var baseSansInterets = base;
             base *= (1 + interetsAnnuels);
-            
+
             interetsCumules += base - baseSansInterets;
 
             if(i > 0){
@@ -118,19 +119,23 @@
             var ligne = '<tr>';
 
             ligne += '<td>' + (i + 1) + '</td>';
-            ligne += '<td>' + baseAvantVersements + '</td>';
-            ligne += '<td>' + base + '</td>';
+            ligne += '<td>' + Math.floor(baseAvantVersements) + '</td>';
+            ligne += '<td>' + Math.floor(base) + '</td>';
             ligne += '<td>' + sansPlacement + '</td>';
-            ligne += '<td>' + (base - baseSansInterets) + '</td>';
-            ligne += '<td>' + interetsCumules + '</td>';          
-            ligne += '<td>' + interetsComposes + '</td>';
+            ligne += '<td>' + Math.floor(base - baseSansInterets) + '</td>';
+            ligne += '<td>' + Math.floor(interetsCumules) + '</td>';          
+            //ligne += '<td>' + interetsComposes + '</td>';
 
             ligne += '</tr>';
 
             html += ligne;
         }
 
-        $('tbody').append(html);
+        html +=
+                    '</tbody>' +
+                '</table>';
+
+        $('.table-responsive').append(html);
     }
 
 </script>

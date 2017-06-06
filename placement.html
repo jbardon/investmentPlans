@@ -1,0 +1,138 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Calcul placements</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .container-fluid {
+            padding-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <form id="calcul" class="col-md-3">
+                <div class="form-group">
+                    <label for="base">Somme de base: </label>
+                    <input type="number" id="form_base" class="form-control" name="base" value="3000"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="base">Apports mensuels: </label>
+                    <input type="number" id="form_apports_mensuels" class="form-control" name="apports_mensuels" value="200"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="interets_versement">Interêts versement: </label>
+                    <input type="number" id="form_interets_versements" class="form-control" name="interets_versement" value="1"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="interets_annuels">Interêts annuels: </label>
+                    <input type="number" id="form_interets_annuels" class="form-control" name="interets_annuels" value="1.3"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="annees">Nombre d'années: </label>
+                    <input type="number" id="form_annees" class="form-control" name="annees" value="5"/>
+                </div>
+
+                <input type="submit" class="btn btn-default" value="Calculer"/>
+            </form>
+
+            <div class="table-responsive col-md-5 col-md-offset-1">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Année</th>
+                            <th>1er Janv.</th>
+                            <th>31 Déc.</th>
+                            <th>Sans placement</th>
+                            <th>Interets</th>
+                            <th>Interets cumulés</th>
+                            <th>Interets composés</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        $('#calcul').submit(calculerRevenus);    
+    });
+
+    function calculerRevenus(event){
+        
+        event.preventDefault();
+        event.stopPropagation();
+
+        var base = parseInt($('#form_base').val()),          
+            apportsMensuels = parseInt($('#form_apports_mensuels').val()),
+            interetsVersements = parseFloat($('#form_interets_versements').val()) /100,
+            interetsAnnuels = parseFloat($('#form_interets_annuels').val()) /100,
+            annees = parseInt($('#form_annees').val());
+
+        var depart = base,
+            sansPlacement = base,
+            interetsCumules = 0,
+            interetsComposes = 0;       
+
+        var html = '';
+
+        base *= (1 - interetsVersements);
+
+        for(var i = 0; i < annees; i++){
+
+            // Algorithme
+            sansPlacement += apportsMensuels *12;
+
+            var baseAvantVersements = base;
+            base += (apportsMensuels *12) * (1 - interetsVersements);
+
+            var baseSansInterets = base;
+            base *= (1 + interetsAnnuels);
+            
+            interetsCumules += base - baseSansInterets;
+
+            if(i > 0){
+                interetsComposes *= 1 + interetsAnnuels;
+            }
+            else {
+                interetsComposes += depart * (1 + interetsAnnuels) - depart;
+            }               
+
+            // Affichage
+            var ligne = '<tr>';
+
+            ligne += '<td>' + (i + 1) + '</td>';
+            ligne += '<td>' + baseAvantVersements + '</td>';
+            ligne += '<td>' + base + '</td>';
+            ligne += '<td>' + sansPlacement + '</td>';
+            ligne += '<td>' + (base - baseSansInterets) + '</td>';
+            ligne += '<td>' + interetsCumules + '</td>';          
+            ligne += '<td>' + interetsComposes + '</td>';
+
+            ligne += '</tr>';
+
+            html += ligne;
+        }
+
+        $('tbody').append(html);
+    }
+
+</script>
+
+</html>

@@ -46,17 +46,20 @@
                 <input type="submit" class="btn btn-default" value="Calculer"/>
             </form>
 
-            <div class="table-responsive col-md-5 col-md-offset-1">                
+            <div class="table-responsive col-md-5 col-md-offset-1">
+                <canvas id="graph" width="400" height="280"></canvas>
             </div>
         </div>
     </div>
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
 <script type="text/javascript">
     $(function() {
         $('#calcul').submit(calculerRevenus);    
+        initChart();
     });
 
     function calculerRevenus(event){
@@ -92,6 +95,14 @@
                         '</tr>' +
                     '</thead>' +
                     '<tbody>';
+
+        var tmpgraph = {
+            label: data,
+            backgroundColor: 'red',
+            borderColor: 'red',
+            data: [],
+            fill: false
+        };
 
         base *= (1 - interetsVersements);
 
@@ -129,6 +140,9 @@
             ligne += '</tr>';
 
             html += ligne;
+
+            // Graph
+            tmpgraph.data.push(Math.floor(baseAvantVersements));
         }
 
         html +=
@@ -136,6 +150,60 @@
                 '</table>';
 
         $('.table-responsive').append(html);
+
+        graph.config.data.datasets.push(tmpgraph);
+        graph.update();
+    }
+    var graph;
+
+    function initChart(){
+
+        var annees = []
+        for(var i = 1; i <= 100; i++){
+            annees.push(i);
+        }
+
+        var config = {
+            type: 'line',
+            data: {
+                labels: annees,
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Indices des investissements en fonction des années'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Année'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
+
+        var ctx = document.getElementById("graph").getContext('2d');
+        graph = new Chart(ctx, config);
     }
 
 </script>

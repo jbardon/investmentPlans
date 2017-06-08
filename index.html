@@ -89,6 +89,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
 
 <script type="text/javascript">
 
@@ -133,12 +134,13 @@
                         text: self.titreGraph
                     },
                     tooltips: {
-                        mode: 'index',
+                        enabled: true,
+                        mode: 'nearest',
                         intersect: false,
                     },
                     hover: {
                         mode: 'nearest',
-                        intersect: true
+                        intersect: false
                     },
                     scales: {
                         xAxes: [{
@@ -193,9 +195,10 @@
         var depart = base,
             sansPlacement = base,
             interetsCumules = 0,
-            interetsComposes = 0;       
+            interetsComposes = 0;
 
-        var data = '<h5><span class="label label-primary">Investissement #' + prochainIdInvestissement + '</span> Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%</h5>';
+        var investColor = randomColor();
+        var data = '<h5><span class="label" style="background-color: ' + investColor + '">Investissement #' + prochainIdInvestissement + '</span> Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%</h5>';
 
         var html = 
             '<table class="table table-bordered table-striped table-hover">' +
@@ -214,40 +217,40 @@
 
         var ligneGraphJanvier = {
             label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: 'red',
-            borderColor: 'red',
+            backgroundColor: investColor,
+            borderColor: investColor,
             data: [],
             fill: false
         };
 
         var ligneGraphDecembre = {
             label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: 'red',
-            borderColor: 'red',
+            backgroundColor: investColor,
+            borderColor: investColor,
             data: [],
             fill: false
         };
 
         var ligneGraphSansPlacement = {
             label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: 'red',
-            borderColor: 'red',
+            backgroundColor: investColor,
+            borderColor: investColor,
             data: [],
             fill: false
         };
 
         var ligneGraphInterets = {
             label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: 'red',
-            borderColor: 'red',
+            backgroundColor: investColor,
+            borderColor: investColor,
             data: [],
             fill: false
         };
 
         var ligneGraphInteretsCumules = {
             label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: 'red',
-            borderColor: 'red',
+            backgroundColor: investColor,
+            borderColor: investColor,
             data: [],
             fill: false
         };

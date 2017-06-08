@@ -112,6 +112,8 @@
         this.titreGraph = titreGraph;
         this.nomIndice = nomIndice;
 
+        this.graph;
+
         this.init = function init(){
             var annees = []
             for(var i = 1; i <= 5; i++){
@@ -158,7 +160,12 @@
             };
 
             var ctx = document.getElementById(self.idCanvas).getContext('2d');
-            graph = new Chart(ctx, config);
+            self.graph = new Chart(ctx, config);
+        }
+
+        this.ajouterLigne = function ajouterLigne(ligne){
+            self.graph.config.data.datasets.push(ligne);
+            self.graph.update();
         }
 
         return this;
@@ -205,8 +212,40 @@
                     '</thead>' +
                     '<tbody>';
 
-        var tmpgraph = {
-            label: data,
+        var ligneGraphJanvier = {
+            label: 'Investissement #' + prochainIdInvestissement,
+            backgroundColor: 'red',
+            borderColor: 'red',
+            data: [],
+            fill: false
+        };
+
+        var ligneGraphDecembre = {
+            label: 'Investissement #' + prochainIdInvestissement,
+            backgroundColor: 'red',
+            borderColor: 'red',
+            data: [],
+            fill: false
+        };
+
+        var ligneGraphSansPlacement = {
+            label: 'Investissement #' + prochainIdInvestissement,
+            backgroundColor: 'red',
+            borderColor: 'red',
+            data: [],
+            fill: false
+        };
+
+        var ligneGraphInterets = {
+            label: 'Investissement #' + prochainIdInvestissement,
+            backgroundColor: 'red',
+            borderColor: 'red',
+            data: [],
+            fill: false
+        };
+
+        var ligneGraphInteretsCumules = {
+            label: 'Investissement #' + prochainIdInvestissement,
             backgroundColor: 'red',
             borderColor: 'red',
             data: [],
@@ -243,7 +282,11 @@
             html += ligne;
 
             // Graph
-            tmpgraph.data.push(Math.floor(baseAvantVersements));
+            ligneGraphJanvier.data.push(Math.floor(baseAvantVersements));
+            ligneGraphDecembre.data.push(Math.floor(base));
+            ligneGraphSansPlacement.data.push(sansPlacement);
+            ligneGraphInterets.data.push(Math.floor(base - baseSansInterets));
+            ligneGraphInteretsCumules.data.push(Math.floor(interetsCumules));
         }
 
         html +=
@@ -252,8 +295,11 @@
 
         $('.table-responsive').append(html);
 
-        graph.config.data.datasets.push(tmpgraph);
-        graph.update();
+        graphJanvier.ajouterLigne(ligneGraphJanvier);
+        graphDecembre.ajouterLigne(ligneGraphDecembre);
+        graphSansPlacement.ajouterLigne(ligneGraphSansPlacement);
+        graphInterets.ajouterLigne(ligneGraphInterets);
+        graphInteretsCumules.ajouterLigne(ligneGraphInteretsCumules);
 
         prochainIdInvestissement++;
     }

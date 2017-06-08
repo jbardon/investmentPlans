@@ -47,20 +47,129 @@
             </form>
 
             <div class="table-responsive col-md-5 col-md-offset-1">
-                <canvas id="graph" width="400" height="280"></canvas>
+                <div id="caroussel-graph" class="carousel slide" data-ride="carousel" data-interval="false">
+                    <div class="carousel-inner" role="listbox">
+                        <div class="item active">
+                            <canvas id="graphJanvier" width="400" height="280"></canvas>
+                        </div>
+
+                        <div class="item">
+                            <canvas id="graphDecembre" width="400" height="280"></canvas>
+                        </div>
+
+                        <div class="item">
+                            <canvas id="graphSansPlacement" width="400" height="280"></canvas>
+                        </div>
+
+                        <div class="item">
+                            <canvas id="graphInterets" width="400" height="280"></canvas>
+                        </div>
+
+                        <div class="item">
+                            <canvas id="graphInteretsCumules" width="400" height="280"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <nav>
+                    <ul class="pagination">
+                        <li><a href="#caroussel-graph" data-slide="prev"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li class="active"><a href="#" data-target="#caroussel-graph" data-slide-to="0">1er Jan.</a></li>
+                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="1">31 Déc.</a></li>
+                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="2">Sans placement</a></li>
+                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="3">Interets</a></li>
+                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="4">Interers cumulés</a></li>
+                        <li><a href="#caroussel-graph" data-slide="next"><span aria-hidden="true">&raquo;</span></a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 
 <script type="text/javascript">
+
     $(function() {
-        $('#calcul').submit(calculerRevenus);    
-        initChart();
+        $('#calcul').submit(calculerRevenus);
+
+        graphJanvier.init();
+        graphDecembre.init();
+        graphSansPlacement.init();
+        graphInterets.init();
+        graphInteretsCumules.init();
+
+        initPagination();
     });
+
+    var InvestissementsGraph = function InvestissementsGraph(idCanvas, titreGraph, nomIndice){
+
+        var self = this;
+
+        this.idCanvas = idCanvas;
+        this.titreGraph = titreGraph;
+        this.nomIndice = nomIndice;
+
+        this.init = function init(){
+            var annees = []
+            for(var i = 1; i <= 5; i++){
+                annees.push(i);
+            }
+
+            var config = {
+                type: 'line',
+                data: {
+                    labels: annees,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    title:{
+                        display:true,
+                        text: self.titreGraph
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Année'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: self.nomIndice
+                            }
+                        }]
+                    }
+                }
+            };
+
+            var ctx = document.getElementById(self.idCanvas).getContext('2d');
+            graph = new Chart(ctx, config);
+        }
+
+        return this;
+    }
+
+    var graphJanvier = new InvestissementsGraph('graphJanvier', 'Evolution de la valeur du fond au 1er Janvier', 'Valeur du fond au 1er Janvier');
+    var graphDecembre = new InvestissementsGraph('graphDecembre', 'Evolution de la valeur du fond au 31 Décembre', 'Valeur du fond au 31 Décembre');
+    var graphSansPlacement = new InvestissementsGraph('graphSansPlacement', 'Evolution de la valeur du fond sans placement', 'Valeur du fond sans placement');
+    var graphInterets = new InvestissementsGraph('graphInterets', 'Evolution des interets produits en fin d\'année', 'Interets produits en fin d\'année');
+    var graphInteretsCumules = new InvestissementsGraph('graphInteretsCumules', 'Evolution des intérets cumulés produits par le fond', 'Intérets cumulés produits');
 
     function calculerRevenus(event){
         
@@ -91,7 +200,6 @@
                             '<th>Sans placement</th>' +
                             '<th>Interets</th>' +
                             '<th>Interets cumulés</th>' +
-//                            '<th>Interets composés</th>' +
                         '</tr>' +
                     '</thead>' +
                     '<tbody>';
@@ -119,13 +227,6 @@
 
             interetsCumules += base - baseSansInterets;
 
-            if(i > 0){
-                interetsComposes *= 1 + interetsAnnuels;
-            }
-            else {
-                interetsComposes += depart * (1 + interetsAnnuels) - depart;
-            }               
-
             // Affichage
             var ligne = '<tr>';
 
@@ -134,8 +235,7 @@
             ligne += '<td>' + Math.floor(base) + '</td>';
             ligne += '<td>' + sansPlacement + '</td>';
             ligne += '<td>' + Math.floor(base - baseSansInterets) + '</td>';
-            ligne += '<td>' + Math.floor(interetsCumules) + '</td>';          
-            //ligne += '<td>' + interetsComposes + '</td>';
+            ligne += '<td>' + Math.floor(interetsCumules) + '</td>';
 
             ligne += '</tr>';
 
@@ -154,58 +254,32 @@
         graph.config.data.datasets.push(tmpgraph);
         graph.update();
     }
-    var graph;
 
-    function initChart(){
+    function initPagination(){
+        $(".pagination a").click(function() {
 
-        var annees = []
-        for(var i = 1; i <= 100; i++){
-            annees.push(i);
-        }
+            if (!$(this).children().is("span")) {
+                $(".pagination li").removeClass("active");
+                $(this).parent().addClass("active");
+            }
+            else {
+                var current = $(".pagination li.active a[data-slide-to]").parent();
 
-        var config = {
-            type: 'line',
-            data: {
-                labels: annees,
-                datasets: []
-            },
-            options: {
-                responsive: true,
-                title:{
-                    display:true,
-                    text:'Indices des investissements en fonction des années'
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                scales: {
-                    xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Année'
-                        }
-                    }],
-                    yAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Value'
-                        }
-                    }]
+                if ($(this).text() == "«") newVal = current.prev();
+                else newVal = current.next();
+
+                $(this).parent().removeClass("active");
+
+                if (newVal.text() != "«" && newVal.text() != "»") {
+                    current.removeClass("active");
+                    newVal.addClass("active");
+                }
+                else {
+                    return false;
                 }
             }
-        };
-
-        var ctx = document.getElementById("graph").getContext('2d');
-        graph = new Chart(ctx, config);
+        });
     }
-
 </script>
 
 </html>

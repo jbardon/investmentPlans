@@ -134,9 +134,19 @@
                         text: self.titreGraph
                     },
                     tooltips: {
-                        enabled: true,
                         mode: 'label',
                         intersect: false,
+                        callbacks: {
+                            title: function(tooltipItem, data){
+                                return [
+                                   // 'Annee: ' + tooltipItem[0].xLabel,
+                                    'Valeur: ' + tooltipItem[0].yLabel
+                                ];
+                            },
+                            label: function(tooltipItem, data){
+                                return data.datasets[tooltipItem.datasetIndex].label || "";
+                            }
+                        }
                     },
                     hover: {
                         mode: 'label',

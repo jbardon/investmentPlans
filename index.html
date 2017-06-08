@@ -116,20 +116,16 @@
         this.graph;
 
         this.init = function init(){
-            var annees = []
-            for(var i = 1; i <= 5; i++){
-                annees.push(i);
-            }
 
             var config = {
                 type: 'line',
                 data: {
-                    labels: annees,
+                    labels: [1, 2, 3, 4, 5],
                     datasets: []
                 },
                 options: {
                     responsive: true,
-                    title:{
+                    title: {
                         display:true,
                         text: self.titreGraph
                     },
@@ -138,6 +134,7 @@
                         intersect: false,
                         callbacks: {
                             title: function(tooltipItem, data){
+
                                 return [
                                    // 'Annee: ' + tooltipItem[0].xLabel,
                                     'Valeur: ' + tooltipItem[0].yLabel
@@ -158,6 +155,9 @@
                             scaleLabel: {
                                 display: true,
                                 labelString: 'Année'
+                            },
+                            ticks: {
+                                beginAtZero: true
                             }
                         }],
                         yAxes: [{
@@ -165,6 +165,9 @@
                             scaleLabel: {
                                 display: true,
                                 labelString: self.nomIndice
+                            },
+                            ticks: {
+                                beginAtZero: true
                             }
                         }]
                     }
@@ -178,6 +181,20 @@
         this.ajouterLigne = function ajouterLigne(ligne){
             self.graph.config.data.datasets.push(ligne);
             self.graph.update();
+        }
+
+        this.setNombreAnnees = function setNombreAnnees(annees){
+            if(self.graph.config.data.labels.length < annees){
+
+                var labels = self.graph.config.data.labels;
+
+                for(var i = labels.length +1; i <= annees; i++){
+                    labels.push(i);
+                }
+
+                console.log(self.graph);
+                self.graph.update();
+            }
         }
 
         return this;
@@ -313,6 +330,12 @@
         graphSansPlacement.ajouterLigne(ligneGraphSansPlacement);
         graphInterets.ajouterLigne(ligneGraphInterets);
         graphInteretsCumules.ajouterLigne(ligneGraphInteretsCumules);
+
+        graphJanvier.setNombreAnnees(annees);
+        graphDecembre.setNombreAnnees(annees);
+        graphSansPlacement.setNombreAnnees(annees);
+        graphInterets.setNombreAnnees(annees);
+        graphInteretsCumules.setNombreAnnees(annees);
 
         prochainIdInvestissement++;
     }

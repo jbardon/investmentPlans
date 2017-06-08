@@ -11,6 +11,10 @@
         .container-fluid {
             padding-top: 15px;
         }
+
+        nav {
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -88,7 +92,7 @@
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.5.2/randomColor.min.js"></script>
 
 <script type="text/javascript">
@@ -130,15 +134,11 @@
                         text: self.titreGraph
                     },
                     tooltips: {
-                        mode: 'label',
+                        mode: 'point',
                         intersect: false,
                         callbacks: {
                             title: function(tooltipItem, data){
-
-                                return [
-                                   // 'Annee: ' + tooltipItem[0].xLabel,
-                                    'Valeur: ' + tooltipItem[0].yLabel
-                                ];
+                                return 'Valeur: ' + tooltipItem[0].yLabel;
                             },
                             label: function(tooltipItem, data){
                                 return data.datasets[tooltipItem.datasetIndex].label || "";
@@ -146,7 +146,7 @@
                         }
                     },
                     hover: {
-                        mode: 'label',
+                        mode: 'point',
                         intersect: false
                     },
                     scales: {
@@ -192,7 +192,6 @@
                     labels.push(i);
                 }
 
-                console.log(self.graph);
                 self.graph.update();
             }
         }

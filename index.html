@@ -121,6 +121,27 @@
 
         this.init = function init(){
 
+            var original = Chart.defaults.global.legend.onClick;
+            Chart.defaults.global.legend.onClick = function(e, legendItem) {
+                var indexInvest = legendItem.datasetIndex;
+                var cacherLigne = legendItem.hidden;
+
+                if(legendItem.hidden){
+                    $('#invest-' + (indexInvest +1)).show();;
+                }
+                else {
+                    $('#invest-' + (indexInvest +1)).hide();
+                }
+
+                graphJanvier.changerVisibiliteLigne(indexInvest, cacherLigne);
+                graphDecembre.changerVisibiliteLigne(indexInvest, cacherLigne);
+                graphSansPlacement.changerVisibiliteLigne(indexInvest, cacherLigne);
+                graphInterets.changerVisibiliteLigne(indexInvest, cacherLigne);
+                graphInteretsCumules.changerVisibiliteLigne(indexInvest, cacherLigne)
+console.log(e, legendItem);
+                original.call(this, e, legendItem);
+            };
+
             var config = {
                 type: 'line',
                 data: {
@@ -196,6 +217,11 @@
             }
         }
 
+        this.changerVisibiliteLigne = function changerVisibiliteLigne(ligne, visible){
+            self.graph.config.data.datasets[ligne].hidden = !visible;
+            self.graph.update();
+        }
+
         return this;
     }
 
@@ -227,7 +253,7 @@
         var data = '<h5><span class="label" style="background-color: ' + investColor + '">Investissement #' + prochainIdInvestissement + '</span> Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%</h5>';
 
         var html = 
-            '<table class="table table-bordered table-striped table-hover">' +
+            '<table id= "invest-' + prochainIdInvestissement + '" class="table table-bordered table-striped table-hover">' +
                     '<caption>' + data + '</caption>' +
                     '<thead>' +
                         '<tr>' +

@@ -263,6 +263,7 @@ console.log(e, legendItem);
                             '<th>Sans placement</th>' +
                             '<th>Interets</th>' +
                             '<th>Interets cumulés</th>' +
+                            '<th>Interets net</th>' +
                         '</tr>' +
                     '</thead>' +
                     '<tbody>';
@@ -321,7 +322,8 @@ console.log(e, legendItem);
             base *= (1 + interetsAnnuels);
 
             interetsCumules += base - baseSansInterets;
-
+            var interetsNets = base - sansPlacement; 
+       
             // Affichage
             var ligne = '<tr>';
 
@@ -331,6 +333,7 @@ console.log(e, legendItem);
             ligne += '<td>' + sansPlacement + '</td>';
             ligne += '<td>' + Math.floor(base - baseSansInterets) + '</td>';
             ligne += '<td>' + Math.floor(interetsCumules) + '</td>';
+            ligne += '<td>' + Math.floor(interetsNets) + '</td>';          
 
             ligne += '</tr>';
 

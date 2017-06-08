@@ -45,7 +45,6 @@
 
                 <input type="submit" class="btn btn-default" value="Calculer"/>
             </form>
-
             <div class="table-responsive col-md-5 col-md-offset-1">
                 <div id="caroussel-graph" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner" role="listbox">
@@ -171,6 +170,8 @@
     var graphInterets = new InvestissementsGraph('graphInterets', 'Evolution des interets produits en fin d\'année', 'Interets produits en fin d\'année');
     var graphInteretsCumules = new InvestissementsGraph('graphInteretsCumules', 'Evolution des intérets cumulés produits par le fond', 'Intérets cumulés produits');
 
+    var prochainIdInvestissement = 1;
+
     function calculerRevenus(event){
         
         event.preventDefault();
@@ -187,7 +188,7 @@
             interetsCumules = 0,
             interetsComposes = 0;       
 
-        var data = 'Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%';
+        var data = '<h5><span class="label label-primary">Investissement #' + prochainIdInvestissement + '</span> Somme/mensuel ' + base + ' / ' + apportsMensuels + ', Interets versements/annuel= ' + interetsVersements *100 + '% / ' + interetsAnnuels*100 + '%</h5>';
 
         var html = 
             '<table class="table table-bordered table-striped table-hover">' +
@@ -253,6 +254,8 @@
 
         graph.config.data.datasets.push(tmpgraph);
         graph.update();
+
+        prochainIdInvestissement++;
     }
 
     function initPagination(){

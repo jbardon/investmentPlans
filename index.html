@@ -24,27 +24,27 @@
             <form id="calcul" class="col-md-3">
                 <div class="form-group">
                     <label for="base">Somme de base: </label>
-                    <input type="number" id="form_base" class="form-control" name="base" value="3000" step="any"/>
+                    <input type="number" id="form_base" class="form-control" name="base" value="3000" step="any" required/>
                 </div>
 
                 <div class="form-group">
                     <label for="base">Apports mensuels: </label>
-                    <input type="number" id="form_apports_mensuels" class="form-control" name="apports_mensuels" value="200"/>
+                    <input type="number" id="form_apports_mensuels" class="form-control" name="apports_mensuels" value="200" required/>
                 </div>
 
                 <div class="form-group">
                     <label for="interets_versement">Interêts versement: </label>
-                    <input type="number" id="form_interets_versements" class="form-control" name="interets_versement" value="1" step="any"/>
+                    <input type="number" id="form_interets_versements" class="form-control" name="interets_versement" value="1" step="any" required/>
                 </div>
 
                 <div class="form-group">
                     <label for="interets_annuels">Interêts annuels: </label>
-                    <input type="number" id="form_interets_annuels" class="form-control" name="interets_annuels" value="1.3" step="any"/>
+                    <input type="number" id="form_interets_annuels" class="form-control" name="interets_annuels" value="1.3" step="any" required/>
                 </div>
 
                 <div class="form-group">
                     <label for="annees">Nombre d'années: </label>
-                    <input type="number" id="form_annees" class="form-control" name="annees" value="5"/>
+                    <input type="number" id="form_annees" class="form-control" name="annees" value="5" required/>
                 </div>
 
                 <input type="submit" class="btn btn-default" value="Calculer"/>

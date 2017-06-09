@@ -52,41 +52,12 @@
             <div class="table-responsive col-md-5 col-md-offset-1">
                 <div id="caroussel-graph" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner" role="listbox">
-                        <div class="item active">
-                            <canvas id="graphJanvier" width="400" height="280"></canvas>
-                        </div>
-
-                        <div class="item">
-                            <canvas id="graphDecembre" width="400" height="280"></canvas>
-                        </div>
-
-                        <div class="item">
-                            <canvas id="graphSansPlacement" width="400" height="280"></canvas>
-                        </div>
-
-                        <div class="item">
-                            <canvas id="graphInterets" width="400" height="280"></canvas>
-                        </div>
-
-                        <div class="item">
-                            <canvas id="graphInteretsCumules" width="400" height="280"></canvas>
-                        </div>
-
-                        <div class="item">
-                            <canvas id="graphInteretsNets" width="400" height="280"></canvas>
-                        </div>
                     </div>
                 </div>
 
                 <nav>
                     <ul class="pagination">
                         <li><a href="#caroussel-graph" data-slide="prev"><span aria-hidden="true">&laquo;</span></a></li>
-                        <li class="active"><a href="#" data-target="#caroussel-graph" data-slide-to="0">1er Jan.</a></li>
-                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="1">31 Déc.</a></li>
-                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="2">Sans placement</a></li>
-                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="3">Interets</a></li>
-                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="4">Interers cumulés</a></li>
-                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="5">Interers nets</a></li>
                         <li><a href="#caroussel-graph" data-slide="next"><span aria-hidden="true">&raquo;</span></a></li>
                     </ul>
                 </nav>
@@ -139,7 +110,7 @@
         ];
 
         stats.forEach(function(value, key){
-            var currentGraph = new InvestissementsGraph('graph' + value.nomStat, value.titreGraph, value.nomIndice);
+            var currentGraph = new InvestissementsGraph(value.nomStat, value.titreGraph, value.nomIndice);
 
             var currentStat = new InvestissementStat(value.nomStat, currentGraph);
             investStats.push(currentStat);
@@ -150,17 +121,19 @@
         initPagination();
     });
 
-    var InvestissementsGraph = function InvestissementsGraph(idCanvas, titreGraph, nomIndice){
+    var InvestissementsGraph = function InvestissementsGraph(nomStat, titreGraph, nomIndice){
 
         var self = this;
 
-        this.idCanvas = idCanvas;
+        this.nomStat = nomStat;
         this.titreGraph = titreGraph;
         this.nomIndice = nomIndice;
 
         this.graph = undefined;
 
         this.init = function init(){
+
+            self.createGraph();
 
             var original = Chart.defaults.global.legend.onClick;
             Chart.defaults.global.legend.onClick = function(e, legendItem) {
@@ -175,9 +148,9 @@
                 }
 
                 investStats.forEach(function(valeur, index){
-                    var nomGraph = 'graph' + valeur.name;
+                    var idCanvas = valeur.getInvestGraph().getIdCanvas();
 
-                   if(nomGraph != e.target.id){
+                   if(idCanvas != e.target.id){
                        var currentGraph = valeur.getInvestGraph();
                        currentGraph.changerVisibiliteLigne(indexInvest, cacherLigne);
                    }
@@ -239,9 +212,29 @@
                 }
             };
 
-            var ctx = document.getElementById(self.idCanvas).getContext('2d');
+            var canvasId = self.getIdCanvas();
+            var ctx = document.getElementById(canvasId).getContext('2d');
             self.graph = new Chart(ctx, config);
         }
+
+        this.createGraph = function createGraph(){
+
+            var numberCanvas = $('canvas').length;
+
+            var canvas =
+                '<div class="item' + (numberCanvas == 0 ? ' active': '') + '">' +
+                    '<canvas id="' + self.getIdCanvas() + '" width="400" height="280"></canvas>' +
+                '</div>';
+
+            $('div.carousel-inner').append(canvas);
+
+            var page =
+                '<li' + (numberCanvas == 0 ? ' class="active"': '') + '>' +
+                    '<a href="#" data-target="#caroussel-graph" data-slide-to="' + numberCanvas + '">' + self.nomStat + '</a>' +
+                '</li>';
+
+            $('ul.pagination li:last-child').before(page);
+        };
 
         this.ajouterLigne = function ajouterLigne(ligne){
             self.graph.config.data.datasets.push(ligne);
@@ -264,6 +257,10 @@
         this.changerVisibiliteLigne = function changerVisibiliteLigne(ligne, visible){
             self.graph.config.data.datasets[ligne].hidden = !visible;
             self.graph.update();
+        }
+
+        this.getIdCanvas = function getIdCanvas(){
+            return 'graph' + self.nomStat;
         }
 
         return this;

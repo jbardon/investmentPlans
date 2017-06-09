@@ -71,6 +71,10 @@
                         <div class="item">
                             <canvas id="graphInteretsCumules" width="400" height="280"></canvas>
                         </div>
+
+                        <div class="item">
+                            <canvas id="graphInteretsNets" width="400" height="280"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -82,6 +86,7 @@
                         <li><a href="#" data-target="#caroussel-graph" data-slide-to="2">Sans placement</a></li>
                         <li><a href="#" data-target="#caroussel-graph" data-slide-to="3">Interets</a></li>
                         <li><a href="#" data-target="#caroussel-graph" data-slide-to="4">Interers cumulés</a></li>
+                        <li><a href="#" data-target="#caroussel-graph" data-slide-to="5">Interers nets</a></li>
                         <li><a href="#caroussel-graph" data-slide="next"><span aria-hidden="true">&raquo;</span></a></li>
                     </ul>
                 </nav>
@@ -105,6 +110,7 @@
         graphSansPlacement.init();
         graphInterets.init();
         graphInteretsCumules.init();
+        graphInteretsNets.init();
 
         initPagination();
     });
@@ -117,7 +123,7 @@
         this.titreGraph = titreGraph;
         this.nomIndice = nomIndice;
 
-        this.graph;
+        this.graph = undefined;
 
         this.init = function init(){
 
@@ -133,7 +139,7 @@
                     $('#invest-' + (indexInvest +1)).hide();
                 }
 
-                var nomGraphs = ['graphJanvier', 'graphDecembre', 'graphSansPlacement', 'graphInterets', 'graphInteretsCumules'];
+                var nomGraphs = ['graphJanvier', 'graphDecembre', 'graphSansPlacement', 'graphInterets', 'graphInteretsCumules', 'graphInteretsNets'];
 
                 nomGraphs.forEach(function(valeur, index){
                    if(valeur != e.target.id){
@@ -233,6 +239,8 @@
     var graphSansPlacement = new InvestissementsGraph('graphSansPlacement', 'Evolution de la valeur du fond sans placement', 'Valeur du fond sans placement');
     var graphInterets = new InvestissementsGraph('graphInterets', 'Evolution des interets produits en fin d\'année', 'Interets produits en fin d\'année');
     var graphInteretsCumules = new InvestissementsGraph('graphInteretsCumules', 'Evolution des intérets cumulés produits par le fond', 'Intérets cumulés produits');
+    var graphInteretsNets = new InvestissementsGraph('graphInteretsNets', 'Evolution des intérets nets (difference sans placement)', 'Intérets nets produits');
+
 
     var prochainIdInvestissement = 1;
 
@@ -311,6 +319,14 @@
             fill: false
         };
 
+        var ligneGraphInteretsNets = {
+            label: 'Investissement #' + prochainIdInvestissement,
+            backgroundColor: investColor,
+            borderColor: investColor,
+            data: [],
+            fill: false
+        };
+
         base *= (1 - interetsVersements);
 
         for(var i = 0; i < annees; i++){
@@ -348,6 +364,7 @@
             ligneGraphSansPlacement.data.push(sansPlacement);
             ligneGraphInterets.data.push(Math.floor(base - baseSansInterets));
             ligneGraphInteretsCumules.data.push(Math.floor(interetsCumules));
+            ligneGraphInteretsNets.data.push(Math.floor(interetsNets));
         }
 
         html +=
@@ -361,12 +378,14 @@
         graphSansPlacement.ajouterLigne(ligneGraphSansPlacement);
         graphInterets.ajouterLigne(ligneGraphInterets);
         graphInteretsCumules.ajouterLigne(ligneGraphInteretsCumules);
+        graphInteretsNets.ajouterLigne(ligneGraphInteretsNets);
 
         graphJanvier.setNombreAnnees(annees);
         graphDecembre.setNombreAnnees(annees);
         graphSansPlacement.setNombreAnnees(annees);
         graphInterets.setNombreAnnees(annees);
         graphInteretsCumules.setNombreAnnees(annees);
+        graphInteretsNets.setNombreAnnees(annees);
 
         prochainIdInvestissement++;
     }

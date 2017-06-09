@@ -127,18 +127,21 @@
                 var cacherLigne = legendItem.hidden;
 
                 if(legendItem.hidden){
-                    $('#invest-' + (indexInvest +1)).show();;
+                    $('#invest-' + (indexInvest +1)).show();
                 }
                 else {
                     $('#invest-' + (indexInvest +1)).hide();
                 }
 
-                graphJanvier.changerVisibiliteLigne(indexInvest, cacherLigne);
-                graphDecembre.changerVisibiliteLigne(indexInvest, cacherLigne);
-                graphSansPlacement.changerVisibiliteLigne(indexInvest, cacherLigne);
-                graphInterets.changerVisibiliteLigne(indexInvest, cacherLigne);
-                graphInteretsCumules.changerVisibiliteLigne(indexInvest, cacherLigne)
-console.log(e, legendItem);
+                var nomGraphs = ['graphJanvier', 'graphDecembre', 'graphSansPlacement', 'graphInterets', 'graphInteretsCumules'];
+
+                nomGraphs.forEach(function(valeur, index){
+                   if(valeur != e.target.id){
+                       console.log('toot')
+                       eval(valeur + '.changerVisibiliteLigne(indexInvest, cacherLigne);');
+                   }
+                });
+
                 original.call(this, e, legendItem);
             };
 

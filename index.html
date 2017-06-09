@@ -79,31 +79,37 @@
         var stats = [
             {
                 nomStat: 'Janvier',
+                titreTableau: '1er Janv.',
                 titreGraph: 'Evolution de la valeur du fond au 1er Janvier',
                 nomIndice: 'Valeur du fond au 1er Janvier'
             },
             {
                 nomStat: 'Decembre',
+                titreTableau: '31 Déc.',
                 titreGraph: 'Evolution de la valeur du fond au 31 Décembre',
                 nomIndice: 'Valeur du fond au 31 Décembre'
             },
             {
                 nomStat: 'SansPlacement',
+                titreTableau: 'Sans placement',
                 titreGraph: 'Evolution de la valeur du fond sans placement',
                 nomIndice: 'Valeur du fond sans placement'
             },
             {
                 nomStat: 'Interets',
+                titreTableau: 'Interets',
                 titreGraph: 'Evolution des interets produits en fin d\'année',
                 nomIndice: 'Interets produits en fin d\'année'
             },
             {
                 nomStat: 'InteretsCumules',
+                titreTableau: 'Interets cumulés',
                 titreGraph: 'Evolution des intérets cumulés produits par le fond',
                 nomIndice: 'Intérets cumulés produits'
             },
             {
                 nomStat: 'InteretsNets',
+                titreTableau: 'Interets nets',
                 titreGraph: 'Evolution des intérets nets (difference sans placement)',
                 nomIndice: 'Intérets nets produits'
             }
@@ -112,7 +118,7 @@
         stats.forEach(function(value, key){
             var currentGraph = new InvestissementsGraph(value.nomStat, value.titreGraph, value.nomIndice);
 
-            var currentStat = new InvestissementStat(value.nomStat, currentGraph);
+            var currentStat = new InvestissementStat(value.nomStat, value.titreTableau, currentGraph);
             investStats.push(currentStat);
 
             currentGraph.init();
@@ -266,11 +272,12 @@
         return this;
     }
 
-    var InvestissementStat = function InvestissementStat(name, graph){
+    var InvestissementStat = function InvestissementStat(name, colonneTableau, graph){
 
         var self = this;
 
         this.name = name;
+        this.colonneTableau = colonneTableau;
         this.graph = graph;
 
         this.getInvestGraph = function getInvestGraph(){
@@ -308,64 +315,28 @@
                     '<caption>' + data + '</caption>' +
                     '<thead>' +
                         '<tr>' +
-                            '<th>Année</th>' +
-                            '<th>1er Janv.</th>' +
-                            '<th>31 Déc.</th>' +
-                            '<th>Sans placement</th>' +
-                            '<th>Interets</th>' +
-                            '<th>Interets cumulés</th>' +
-                            '<th>Interets net</th>' +
+                            '<th>Année</th>';
+
+        investStats.forEach(function(value, key){
+            html += '<th>' + value.colonneTableau + '</th>';
+        });
+
+        html +=
                         '</tr>' +
                     '</thead>' +
                     '<tbody>';
 
-        var ligneGraphJanvier = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
+        var lignesGraph = [];
 
-        var ligneGraphDecembre = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
-
-        var ligneGraphSansPlacement = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
-
-        var ligneGraphInterets = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
-
-        var ligneGraphInteretsCumules = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
-
-        var ligneGraphInteretsNets = {
-            label: 'Investissement #' + prochainIdInvestissement,
-            backgroundColor: investColor,
-            borderColor: investColor,
-            data: [],
-            fill: false
-        };
+        investStats.forEach(function(value, key){
+            lignesGraph.push({
+                    label: 'Investissement #' + prochainIdInvestissement,
+                    backgroundColor: investColor,
+                    borderColor: investColor,
+                    data: [],
+                    fill: false
+            });
+        });
 
         base *= (1 - interetsVersements);
 
@@ -387,24 +358,26 @@
             var ligne = '<tr>';
 
             ligne += '<td>' + (i + 1) + '</td>';
-            ligne += '<td>' + Math.floor(baseAvantVersements) + '</td>';
-            ligne += '<td>' + Math.floor(base) + '</td>';
-            ligne += '<td>' + sansPlacement + '</td>';
-            ligne += '<td>' + Math.floor(base - baseSansInterets) + '</td>';
-            ligne += '<td>' + Math.floor(interetsCumules) + '</td>';
-            ligne += '<td>' + Math.floor(interetsNets) + '</td>';          
+
+            var lineValue = [
+                Math.floor(baseAvantVersements),
+                Math.floor(base),
+                sansPlacement,
+                Math.floor(base - baseSansInterets),
+                Math.floor(interetsCumules),
+                Math.floor(interetsNets)
+            ];
+
+            investStats.forEach(function(value, key){
+                var statVal = lineValue[key];
+
+                ligne += '<td>' + statVal + '</td>';
+                lignesGraph[key].data.push(statVal);
+            });
 
             ligne += '</tr>';
 
             html += ligne;
-
-            // Graph
-            ligneGraphJanvier.data.push(Math.floor(baseAvantVersements));
-            ligneGraphDecembre.data.push(Math.floor(base));
-            ligneGraphSansPlacement.data.push(sansPlacement);
-            ligneGraphInterets.data.push(Math.floor(base - baseSansInterets));
-            ligneGraphInteretsCumules.data.push(Math.floor(interetsCumules));
-            ligneGraphInteretsNets.data.push(Math.floor(interetsNets));
         }
 
         html +=
@@ -415,7 +388,7 @@
 
         investStats.forEach(function(value, index){
             var graph = value.getInvestGraph();
-            graph.ajouterLigne(eval('ligneGraph' + value.name));
+            graph.ajouterLigne(lignesGraph[index]);
             graph.setNombreAnnees(annees);
         });
 

@@ -105,12 +105,47 @@
     $(function() {
         $('#calcul').submit(calculerRevenus);
 
-        graphJanvier.init();
-        graphDecembre.init();
-        graphSansPlacement.init();
-        graphInterets.init();
-        graphInteretsCumules.init();
-        graphInteretsNets.init();
+        var stats = [
+            {
+                nomStat: 'Janvier',
+                titreGraph: 'Evolution de la valeur du fond au 1er Janvier',
+                nomIndice: 'Valeur du fond au 1er Janvier'
+            },
+            {
+                nomStat: 'Decembre',
+                titreGraph: 'Evolution de la valeur du fond au 31 Décembre',
+                nomIndice: 'Valeur du fond au 31 Décembre'
+            },
+            {
+                nomStat: 'SansPlacement',
+                titreGraph: 'Evolution de la valeur du fond sans placement',
+                nomIndice: 'Valeur du fond sans placement'
+            },
+            {
+                nomStat: 'Interets',
+                titreGraph: 'Evolution des interets produits en fin d\'année',
+                nomIndice: 'Interets produits en fin d\'année'
+            },
+            {
+                nomStat: 'InteretsCumules',
+                titreGraph: 'Evolution des intérets cumulés produits par le fond',
+                nomIndice: 'Intérets cumulés produits'
+            },
+            {
+                nomStat: 'InteretsNets',
+                titreGraph: 'Evolution des intérets nets (difference sans placement)',
+                nomIndice: 'Intérets nets produits'
+            }
+        ];
+
+        stats.forEach(function(value, key){
+            var currentGraph = new InvestissementsGraph('graph' + value.nomStat, value.titreGraph, value.nomIndice);
+
+            var currentStat = new InvestissementStat(value.nomStat, currentGraph);
+            investStats.push(currentStat);
+
+            currentGraph.init();
+        });
 
         initPagination();
     });
@@ -139,12 +174,12 @@
                     $('#invest-' + (indexInvest +1)).hide();
                 }
 
-                var nomGraphs = ['graphJanvier', 'graphDecembre', 'graphSansPlacement', 'graphInterets', 'graphInteretsCumules', 'graphInteretsNets'];
+                investStats.forEach(function(valeur, index){
+                    var nomGraph = 'graph' + valeur.name;
 
-                nomGraphs.forEach(function(valeur, index){
-                   if(valeur != e.target.id){
-                       console.log('toot')
-                       eval(valeur + '.changerVisibiliteLigne(indexInvest, cacherLigne);');
+                   if(nomGraph != e.target.id){
+                       var currentGraph = valeur.getInvestGraph();
+                       currentGraph.changerVisibiliteLigne(indexInvest, cacherLigne);
                    }
                 });
 
@@ -234,13 +269,21 @@
         return this;
     }
 
-    var graphJanvier = new InvestissementsGraph('graphJanvier', 'Evolution de la valeur du fond au 1er Janvier', 'Valeur du fond au 1er Janvier');
-    var graphDecembre = new InvestissementsGraph('graphDecembre', 'Evolution de la valeur du fond au 31 Décembre', 'Valeur du fond au 31 Décembre');
-    var graphSansPlacement = new InvestissementsGraph('graphSansPlacement', 'Evolution de la valeur du fond sans placement', 'Valeur du fond sans placement');
-    var graphInterets = new InvestissementsGraph('graphInterets', 'Evolution des interets produits en fin d\'année', 'Interets produits en fin d\'année');
-    var graphInteretsCumules = new InvestissementsGraph('graphInteretsCumules', 'Evolution des intérets cumulés produits par le fond', 'Intérets cumulés produits');
-    var graphInteretsNets = new InvestissementsGraph('graphInteretsNets', 'Evolution des intérets nets (difference sans placement)', 'Intérets nets produits');
+    var InvestissementStat = function InvestissementStat(name, graph){
 
+        var self = this;
+
+        this.name = name;
+        this.graph = graph;
+
+        this.getInvestGraph = function getInvestGraph(){
+            return self.graph;
+        }
+
+        return this;
+    }
+
+    var investStats = [];
 
     var prochainIdInvestissement = 1;
 
@@ -373,19 +416,11 @@
 
         $('.table-responsive').append(html);
 
-        graphJanvier.ajouterLigne(ligneGraphJanvier);
-        graphDecembre.ajouterLigne(ligneGraphDecembre);
-        graphSansPlacement.ajouterLigne(ligneGraphSansPlacement);
-        graphInterets.ajouterLigne(ligneGraphInterets);
-        graphInteretsCumules.ajouterLigne(ligneGraphInteretsCumules);
-        graphInteretsNets.ajouterLigne(ligneGraphInteretsNets);
-
-        graphJanvier.setNombreAnnees(annees);
-        graphDecembre.setNombreAnnees(annees);
-        graphSansPlacement.setNombreAnnees(annees);
-        graphInterets.setNombreAnnees(annees);
-        graphInteretsCumules.setNombreAnnees(annees);
-        graphInteretsNets.setNombreAnnees(annees);
+        investStats.forEach(function(value, index){
+            var graph = value.getInvestGraph();
+            graph.ajouterLigne(eval('ligneGraph' + value.name));
+            graph.setNombreAnnees(annees);
+        });
 
         prochainIdInvestissement++;
     }

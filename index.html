@@ -211,7 +211,7 @@
                                 labelString: self.nomIndice
                             },
                             ticks: {
-                                beginAtZero: true
+                                suggestedMin: 0
                             }
                         }]
                     }
@@ -255,6 +255,16 @@
                 for(var i = labels.length +1; i <= annees; i++){
                     labels.push(i);
                 }
+
+                self.graph.update();
+            }
+        }
+
+        this.setValeurMinimum = function setValeurMinimum(valeur){
+            var ticks = self.graph.config.options.scales.yAxes[0].ticks;
+
+            if(ticks.suggestedMin < valeur){
+                ticks.suggestedMin = valeur;
 
                 self.graph.update();
             }
@@ -378,6 +388,13 @@
             ligne += '</tr>';
 
             html += ligne;
+
+            if(i == 0){
+                investStats.forEach(function(value, index){
+                    var graph = value.getInvestGraph();
+                    graph.setValeurMinimum(lineValue[index]);
+                });
+            }
         }
 
         html +=
